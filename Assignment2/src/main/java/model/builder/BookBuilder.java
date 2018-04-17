@@ -13,6 +13,10 @@ public class BookBuilder {
     private int price;
     private int quantity;*/
 
+    public BookBuilder() {
+        book=new Book();
+    }
+
     public BookBuilder setId(Long id)
     {
         book.setId(id);

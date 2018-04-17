@@ -17,7 +17,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Notification<Boolean> addBook(String title, String author, String genre, int price, int quantity) {
+        System.out.println("Hello from book service");
         Book book=new BookBuilder().setTitle(title).setAuthor(author).setGenre(genre).setPrice(price).setQuantity(quantity).build();
+        System.out.println(book.toString());
         BookValidator bookValidator=new BookValidator();
         boolean bookValidation=bookValidator.validate(book);
         Notification<Boolean> bookNotification=new Notification<>();
@@ -32,5 +34,17 @@ public class BookServiceImpl implements BookService {
             bookNotification.setResult(Boolean.TRUE);
         }
         return bookNotification;
+    }
+
+    @Override
+    public Notification<Boolean> updateBook(Long id, String title, String author, String genre, int price, int quantity) {
+        return null;
+
+    }
+
+    @Override
+    public void deleteBook(Long id) {
+        Book book=new BookBuilder().setId(id).build();
+        bookRepository.delete(book);
     }
 }

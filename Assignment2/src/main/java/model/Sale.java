@@ -39,6 +39,7 @@ public class Sale {
     public int getQuantity() {
         return quantity;
     }
+
     @Override
     public String toString() {
         return "Sale{" +

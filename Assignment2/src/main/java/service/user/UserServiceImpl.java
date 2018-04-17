@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import repository.user.UserRepository;
 
 import java.security.MessageDigest;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -35,6 +36,19 @@ public class UserServiceImpl implements UserService {
         }
         return userNotification;
 
+    }
+
+    @Override
+    public List<User> findByUsername(String username) {
+        List<User> users=userRepository.findByUsername(username);
+        if (users.isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            return users;
+        }
     }
 
     private String encodePassword(String password) {

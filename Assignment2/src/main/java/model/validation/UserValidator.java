@@ -35,6 +35,14 @@ public class UserValidator {
         validateRole(u.getRole());
         return errors.isEmpty();
     }
+    public boolean validateAuth(User user,String password)
+    {
+        if (!user.getPassword().equals(password))
+        {
+            errors.add("Invalid email or password");
+        }
+        return errors.isEmpty();
+    }
     private void validateUsername(String username) {
         if (!Pattern.compile(EMAIL_VALIDATION_REGEX).matcher(username).matches()) {
             errors.add("Invalid email!");

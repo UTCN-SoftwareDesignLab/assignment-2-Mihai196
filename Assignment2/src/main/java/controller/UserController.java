@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import service.user.UserService;
 
+import java.security.MessageDigest;
+import java.util.List;
+
 @Controller
 public class UserController {
 
@@ -18,13 +21,34 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String login(Model model, String error, String logout) {
-        if (error != null)
-            model.addAttribute("error", "Your username and password is invalid.");
-
-        if (logout != null)
-            model.addAttribute("message", "You have been logged out successfully.");
+    public String showLogin(Model model, String error, String logout) {
         return "login";
+    }
+
+
+    @RequestMapping(value="/login",method=RequestMethod.POST)
+    public String login(Model model,@RequestParam("username")String username,@RequestParam("password") String password)
+    {
+        List<User> usersByUsername=userService.findByUsername(username);
+        User firstUser=usersByUsername.get(0);
+        System.out.println(firstUser.toString());
+        if (encodePassword(password).equals(firstUser.getPassword()))
+        {
+            //username-ul si parola o fost corect gasite
+            if (firstUser.getRole().equals("administrator"))
+            {
+                return "redirect:/book";
+            }
+            else
+            {
+                return "redirect:/book";
+            }
+        }
+        else
+        {
+            return "login";
+        }
+
     }
     @RequestMapping(value="/registration",method=RequestMethod.GET)
     public String reg()
@@ -38,12 +62,32 @@ public class UserController {
         if (userNotification.hasErrors())
         {
             model.addAttribute("error",userNotification.getFormattedErrors());
+            return "registration";
         }
         else
         {
             System.out.println("The new user was added succesfully to the database");
+            return "redirect:/book";
         }
-        return "registration";
-
     }
+
+    private String encodePassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes("UTF-8"));
+            StringBuilder hexString = new StringBuilder();
+
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+
 }
