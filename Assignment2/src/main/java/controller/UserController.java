@@ -22,6 +22,7 @@ public class UserController {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String showLogin(Model model, String error, String logout) {
+        model.addAttribute("incorrect","");
         return "login";
     }
 
@@ -46,6 +47,7 @@ public class UserController {
         }
         else
         {
+            model.addAttribute("incorrect","Invalid user name or password");
             return "login";
         }
 
@@ -69,6 +71,13 @@ public class UserController {
             System.out.println("The new user was added succesfully to the database");
             return "redirect:/book";
         }
+    }
+
+    @RequestMapping(value="/registrationLog",method=RequestMethod.GET)
+    public String deleteBook(Model model)
+    {
+        return "redirect:/registration";
+
     }
 
     private String encodePassword(String password) {

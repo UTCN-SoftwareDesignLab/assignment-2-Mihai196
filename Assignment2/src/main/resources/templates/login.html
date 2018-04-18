@@ -37,11 +37,18 @@
             </div>
 
             <!-- ALERTS -->
-            <div th:if="${param.error}" class="alert alert-danger" role="alert">
-                Invalid username or password.
-            </div>
+            <span th:text="${incorrect}"/>
             <div th:if="${param.logout}" class="alert alert-success" role="alert">
                 You have been logged out.
+            </div>
+        </form>
+        </form>
+
+        <form th:action="@{/registrationLog}" method="get">
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-10">
+                    <button class="btn btn-primary">Create new account</button>
+                </div>
             </div>
         </form>
     </div>

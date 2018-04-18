@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repository.book.BookRepository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class BookServiceImpl implements BookService {
 
@@ -38,7 +41,32 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Notification<Boolean> updateBook(Long id, String title, String author, String genre, int price, int quantity) {
-        return null;
+        Optional<Book> b=bookRepository.findById(id);
+        Book book=new Book();
+        if (b.isPresent())
+        {
+            book=b.get();
+        }
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setGenre(genre);
+        book.setPrice(price);
+        book.setQuantity(quantity);
+        BookValidator bookValidator=new BookValidator();
+        boolean bookValidation=bookValidator.validate(book);
+        Notification<Boolean> bookNotification=new Notification<>();
+        if (!bookValidation)
+        {
+            bookValidator.getErrors().forEach(bookNotification::addError);
+            bookNotification.setResult(Boolean.FALSE);
+        }
+        else
+        {
+            bookRepository.save(book);
+            bookNotification.setResult(Boolean.TRUE);
+        }
+        return bookNotification;
+
 
     }
 
@@ -46,5 +74,11 @@ public class BookServiceImpl implements BookService {
     public void deleteBook(Long id) {
         Book book=new BookBuilder().setId(id).build();
         bookRepository.delete(book);
+    }
+
+    @Override
+    public List<Book> findAll() {
+        List<Book> books=bookRepository.findAll();
+        return books;
     }
 }

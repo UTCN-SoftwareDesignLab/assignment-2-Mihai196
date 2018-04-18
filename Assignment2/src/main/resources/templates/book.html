@@ -25,19 +25,26 @@
 
     <h1>Books:</h1>
 
-    <table>
+    <table border="1">
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Genre</th>
-                <th>Price</th>
-                <th>Quantity</th>
-            </tr>
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Genre</th>
+            <th>Price</th>
+            <th>Quantity</th>
+        </tr>
         </thead>
         <tbody>
-
+        <tr th:each="book : ${books}">
+            <td th:text="${book.id}"></td>
+            <td th:text="${book.title}"></td>
+            <td th:text="${book.author}"></td>
+            <td th:text="${book.genre}"></td>
+            <td th:text="${book.price}"></td>
+            <td th:text="${book.quantity}"></td>
+        </tr>
         </tbody>
     </table>
 
@@ -76,22 +83,36 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-offset-4 col-sm-10">
-                    <button class="btn btn-primary">AddBook</button>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="idBook" class="col-sm-4 control-label">IdBook:</label>
+                <label for="IdBookUp" class="col-sm-4 control-label">BookId which you want to update:</label>
                 <div class="col-sm-8">
-                    <input type="text" name="idBook" id="idBook" class="form-control"/>
+                    <input type="text" name="IdBookUp" id="IdBookUp" class="form-control"/>
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-sm-offset-4 col-sm-10">
-                    <button class="btn btn-primary">DeleteBook</button>
-                </div>
-            </div>
+            <input type="submit" class="button" name="add" value="AddBook" />
+            <input type="submit" class="button" name="update" value="UpdateBook" />
+            <span th:text="${addOk}"/>
+            <span th:text="${updateOk}"/>
+            <span th:text="${addError}"/>
+            <span th:text="${updateError}"/>
 
+
+
+        </form>
+
+        <form th:action="@{/deleteBook}" method="get">
+            <div class="form-group">
+                <label for="IdBook" class="col-sm-4 control-label">BookId which you want to delete:</label>
+                <div class="col-sm-8">
+                    <input type="text" name="IdBook" id="IdBook" class="form-control"/>
+                </div>
+            </div>
+            <input type="submit" class="button" name="delete" value="Delete" />
+            <span th:text="${deleteMessage}"/>
+
+        </form>
+
+        <form th:action="@{/viewBook}" method="get">
+            <input type="submit" class="button" name="viewBooks" value="View Books" />
         </form>
     </div>
 </body>
