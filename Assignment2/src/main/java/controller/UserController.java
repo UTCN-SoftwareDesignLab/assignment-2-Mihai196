@@ -31,23 +31,23 @@ public class UserController {
     public String login(Model model,@RequestParam("username")String username,@RequestParam("password") String password)
     {
         List<User> usersByUsername=userService.findByUsername(username);
-        User firstUser=usersByUsername.get(0);
-        System.out.println(firstUser.toString());
-        if (encodePassword(password).equals(firstUser.getPassword()))
-        {
-            //username-ul si parola o fost corect gasite
-            if (firstUser.getRole().equals("administrator"))
-            {
-                return "redirect:/book";
-            }
-            else
-            {
-                return "redirect:/book";
+        if (usersByUsername!=null) {
+            User firstUser=usersByUsername.get(0);
+            if (encodePassword(password).equals(firstUser.getPassword())) {
+                //username-ul si parola o fost corect gasite
+                if (firstUser.getRole().equals("administrator")) {
+                    return "redirect:/book";
+                } else {
+                    return "redirect:/employee";
+                }
+            } else {
+                model.addAttribute("incorrect", "Invalid password for username");
+                return "login";
             }
         }
         else
         {
-            model.addAttribute("incorrect","Invalid user name or password");
+            model.addAttribute("incorrect","User was not found in the database");
             return "login";
         }
 

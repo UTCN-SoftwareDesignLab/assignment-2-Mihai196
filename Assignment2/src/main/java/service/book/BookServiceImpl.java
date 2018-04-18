@@ -77,6 +77,20 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public Book findById(Long id) {
+        Optional<Book> book=bookRepository.findById(id);
+        if (book.isPresent())
+        {
+            Book b=book.get();
+            return b;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    @Override
     public List<Book> findAll() {
         List<Book> books=bookRepository.findAll();
         return books;
@@ -97,6 +111,12 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Book> findByGenre(String genre) {
         List<Book> books=bookRepository.findByGenre(genre);
+        return books;
+    }
+
+    @Override
+    public List<Book> findByQuantity(int quantity) {
+        List<Book> books=bookRepository.findByQuantity(quantity);
         return books;
     }
 
