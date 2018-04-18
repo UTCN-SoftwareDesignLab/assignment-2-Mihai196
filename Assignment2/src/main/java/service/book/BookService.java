@@ -12,4 +12,7 @@ public interface BookService {
     Notification<Boolean> updateBook(Long id,String title,String author,String genre,int price,int quantity);
     void deleteBook(Long id);
     List<Book> findAll();
+    List<Book> findByTitle(String title);
+    List<Book> findByAuthor(String author);
+    List<Book> findByGenre(String genre);
 }

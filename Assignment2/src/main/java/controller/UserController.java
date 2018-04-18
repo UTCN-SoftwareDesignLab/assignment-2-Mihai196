@@ -68,8 +68,14 @@ public class UserController {
         }
         else
         {
-            System.out.println("The new user was added succesfully to the database");
-            return "redirect:/book";
+            if (role.equals("administrator")) {
+                System.out.println("The new user was added successfully to the database");
+                return "redirect:/book";
+            }
+            else
+            {
+                return "redirect:/employee";
+            }
         }
     }
 
