@@ -2,7 +2,6 @@ package controller;
 
 import model.Book;
 import model.Sale;
-import model.builder.SaleBuilder;
 import model.validation.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,7 +17,6 @@ import java.util.List;
 @Controller
 public class EmployeeController {
 
-
     private BookService bookService;
     private SaleService saleService;
 
@@ -32,7 +30,13 @@ public class EmployeeController {
     @RequestMapping(value="/employee",method = RequestMethod.GET)
     public String showEmployee()
     {
-        return "employee";
+        if(UserController.getLogggedFlag().equals(Boolean.TRUE)) {
+            return "employee";
+        }
+        else
+        {
+            return "redirect:/login";
+        }
     }
     @RequestMapping(value="/employee",params = "findTitle",method=RequestMethod.POST)
     public String findByTitle(Model model, @RequestParam("title") String title)

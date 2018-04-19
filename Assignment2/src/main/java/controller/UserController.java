@@ -1,7 +1,6 @@
 package controller;
 
 import model.User;
-import model.builder.UserBuilder;
 import model.validation.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,8 +16,18 @@ import java.util.List;
 @Controller
 public class UserController {
 
-    @Autowired
     private UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    private static Boolean logggedFlag=false;
+
+    public static Boolean getLogggedFlag() {
+        return logggedFlag;
+    }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String showLogin(Model model, String error, String logout) {
@@ -35,6 +44,7 @@ public class UserController {
             User firstUser=usersByUsername.get(0);
             if (encodePassword(password).equals(firstUser.getPassword())) {
                 //username-ul si parola o fost corect gasite
+                logggedFlag=Boolean.TRUE;
                 if (firstUser.getRole().equals("administrator")) {
                     return "redirect:/book";
                 } else {
@@ -55,6 +65,7 @@ public class UserController {
     @RequestMapping(value="/registration",method=RequestMethod.GET)
     public String reg()
     {
+
         return "registration";
     }
 
@@ -68,6 +79,7 @@ public class UserController {
         }
         else
         {
+            logggedFlag=Boolean.TRUE;
             if (role.equals("administrator")) {
                 System.out.println("The new user was added successfully to the database");
                 return "redirect:/book";
@@ -84,6 +96,22 @@ public class UserController {
     {
         return "redirect:/registration";
 
+    }
+    @RequestMapping(value = "/book", method = RequestMethod.GET)
+    public String bookie() {
+        if(logggedFlag.equals(Boolean.TRUE)) {
+            //System.out.println("Ai ajuns aici din user controller");
+            return "book";
+        }
+        else
+        {
+            return "redirect:/login";
+        }
+    }
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public String logout() {
+        logggedFlag=Boolean.FALSE;
+        return "redirect:/login";
     }
 
     private String encodePassword(String password) {

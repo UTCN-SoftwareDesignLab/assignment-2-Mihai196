@@ -3,6 +3,11 @@ package controller;
 import model.Book;
 import model.User;
 import model.validation.Notification;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import service.book.BookService;
 import service.user.UserService;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 @Controller
@@ -24,12 +33,6 @@ public class AdminController {
     public AdminController(BookService bookService, UserService userService) {
         this.bookService = bookService;
         this.userService = userService;
-    }
-
-    @RequestMapping(value = "/book", method = RequestMethod.GET)
-    public String bookie() {
-        System.out.println("Ai ajuns aici din user controller");
-        return "book";
     }
 
     @RequestMapping(value = "/book", params = "update", method = RequestMethod.POST)
@@ -70,9 +73,81 @@ public class AdminController {
         return "redirect:/userOps";
     }
 
+    @RequestMapping(value = "/book", params = "genReport", method = RequestMethod.POST)
+    public String genReportapache(Model model) {
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDFont font = PDType1Font.HELVETICA_BOLD;
+        try {
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+            List<Book> booksOutOfStock = bookService.findByQuantity(0);//all out of stock books have 0 on quantity
+            String booksToBeAdded = "Books which are out of stock are : ";
+            contentStream.beginText();
+            contentStream.setFont(font, 12);
+            contentStream.setLeading(14.5f);
+            contentStream.newLineAtOffset(50, 685);
+            contentStream.showText(booksToBeAdded);
+            contentStream.newLine();
+            for (Book book : booksOutOfStock) {
+                contentStream.showText(book.toString());
+                contentStream.newLine();
+            }
+            contentStream.endText();
+            contentStream.close();
+            document.save("Report.pdf");
+            document.close();
+            model.addAttribute("addOk", "Report generation was done successfully");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "/book";
+    }
+    @RequestMapping(value = "/book",params = "genReportC",method = RequestMethod.POST)
+    public String genCsvReport(Model model)
+    {
+        try {
+            PrintWriter pw = new PrintWriter(new File("Report.csv"));
+            StringBuilder sb = new StringBuilder();
+            sb.append("BookId");
+            sb.append(',');
+            sb.append("Title");
+            sb.append(',');
+            sb.append("Author");
+            sb.append(',');
+            sb.append("Price");
+            sb.append('\n');
+            List<Book> booksOutOfStock = bookService.findByQuantity(0);//all out of stock books have 0 on quantity
+            for(Book book:booksOutOfStock)
+            {
+                sb.append(book.getId());
+                sb.append(',');
+                sb.append(book.getTitle());
+                sb.append(',');
+                sb.append(book.getAuthor());
+                sb.append(',');
+                sb.append(book.getPrice());
+                sb.append('\n');
+            }
+            pw.write(sb.toString());
+            pw.close();
+            model.addAttribute("addOk", "Report generation was done successfully");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return "/book";
+
+    }
+
     @RequestMapping(value = "/userOps", method = RequestMethod.GET)
     public String showUserOps(Model model) {
-        return "userOps";
+        if (UserController.getLogggedFlag().equals(Boolean.TRUE)) {
+            return "userOps";
+        }
+        else
+        {
+            return "redirect:/login";
+        }
     }
 
     @RequestMapping(value = "/userOps", params = "viewUser", method = RequestMethod.POST)
@@ -98,16 +173,13 @@ public class AdminController {
     @RequestMapping(value = "/userOps", params = "updateUser", method = RequestMethod.POST)
     public String updateUser(Model model, @RequestParam("idUser") String idUser, @RequestParam("username") String username,
                              @RequestParam("password") String password, @RequestParam("role") String role) {
-        Long id=Long.parseLong(idUser);
-        Notification<Boolean> userNotification=userService.updateUser(id,username,password,role);
-        if(userNotification.hasErrors())
-        {
-            model.addAttribute("updateError",userNotification.getFormattedErrors());
+        Long id = Long.parseLong(idUser);
+        Notification<Boolean> userNotification = userService.updateUser(id, username, password, role);
+        if (userNotification.hasErrors()) {
+            model.addAttribute("updateError", userNotification.getFormattedErrors());
             return "/userOps";
-        }
-        else
-        {
-            model.addAttribute("updateOk","User was updated successfully");
+        } else {
+            model.addAttribute("updateOk", "User was updated successfully");
             return "/userOps";
         }
 
@@ -137,13 +209,8 @@ public class AdminController {
         return "book";
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public String logout() {
-        return "redirect:/login";
-    }
-    @RequestMapping(value="/backToBook",method = RequestMethod.GET)
-    public String backToBook()
-    {
+    @RequestMapping(value = "/backToBook", method = RequestMethod.GET)
+    public String backToBook() {
         return "redirect:/book";
     }
 

@@ -71,6 +71,7 @@
 <hr/>
 
 <div class="container">
+    <h3>Books:</h3>
     <form th:action="@{/employee}" method="post" class="form-horizontal col-sm-6 col-sm-offset-3">
         <div class="form-group">
             <label for="title" class="col-sm-4 control-label">Title:</label>
@@ -102,7 +103,7 @@
         <span th:text="${addError}"/>
         <span th:text="${updateError}"/>
 
-
+        <h3>Sales:</h3>
         <div class="form-group">
             <label for="bookIdSale" class="col-sm-4 control-label">BookIdSale:</label>
             <div class="col-sm-8">
