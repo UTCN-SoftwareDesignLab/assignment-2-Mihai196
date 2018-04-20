@@ -1,5 +1,6 @@
 package controller;
 
+import com.google.api.services.books.model.Volume;
 import model.Book;
 import model.User;
 import model.validation.Notification;
@@ -14,13 +15,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import service.googleBooksAPI.GoogleSearchService;
 import service.book.BookService;
+import service.report.ReportFactory;
+import service.report.ReportService;
 import service.user.UserService;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 @Controller
@@ -28,17 +33,23 @@ public class AdminController {
 
     private BookService bookService;
     private UserService userService;
+    private GoogleSearchService googleSearchService;
+    private ReportService reportService;
+    private ReportFactory reportFactory;
 
     @Autowired
-    public AdminController(BookService bookService, UserService userService) {
+    public AdminController(BookService bookService, UserService userService,GoogleSearchService googleSearchService,ReportService reportService,ReportFactory reportFactory) {
         this.bookService = bookService;
         this.userService = userService;
+        this.googleSearchService=googleSearchService;
+        this.reportService=reportService;
+        this.reportFactory=reportFactory;
     }
 
     @RequestMapping(value = "/book", params = "update", method = RequestMethod.POST)
     public String updateBook(Model model, @RequestParam("title") String title, @RequestParam("author") String author, @RequestParam("genre") String genre
             , @RequestParam("price") String price, @RequestParam("quantity") String quantity, @RequestParam("IdBookUp") String idBook) {
-        int pr = Integer.parseInt(price);
+        double pr = Double.parseDouble(price);
         int quant = Integer.parseInt(quantity);
         Long id = Long.parseLong(idBook);
         Notification<Boolean> bookNotification = bookService.updateBook(id, title, author, genre, pr, quant);
@@ -56,7 +67,7 @@ public class AdminController {
     public String addBook(Model model, @RequestParam("title") String title, @RequestParam("author") String author, @RequestParam("genre") String genre
             , @RequestParam("price") String price, @RequestParam("quantity") String quantity) {
         System.out.println("Seruuuus ");
-        int pr = Integer.parseInt(price);
+        double pr = Double.parseDouble(price);
         int quant = Integer.parseInt(quantity);
         Notification<Boolean> bookNotification = bookService.addBook(title, author, genre, pr, quant);
         if (bookNotification.hasErrors()) {
@@ -74,71 +85,29 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/book", params = "genReport", method = RequestMethod.POST)
-    public String genReportapache(Model model) {
-        PDDocument document = new PDDocument();
-        PDPage page = new PDPage();
-        document.addPage(page);
-        PDFont font = PDType1Font.HELVETICA_BOLD;
+    public String genReportapache(Model model,@RequestParam("typeReport") String reportType) {
+        ReportService reportService=reportFactory.getReportType(reportType);
+        List<Book> booksOutOfStock=bookService.findByQuantity(0);
         try {
-            PDPageContentStream contentStream = new PDPageContentStream(document, page);
-            List<Book> booksOutOfStock = bookService.findByQuantity(0);//all out of stock books have 0 on quantity
-            String booksToBeAdded = "Books which are out of stock are : ";
-            contentStream.beginText();
-            contentStream.setFont(font, 12);
-            contentStream.setLeading(14.5f);
-            contentStream.newLineAtOffset(50, 685);
-            contentStream.showText(booksToBeAdded);
-            contentStream.newLine();
-            for (Book book : booksOutOfStock) {
-                contentStream.showText(book.toString());
-                contentStream.newLine();
-            }
-            contentStream.endText();
-            contentStream.close();
-            document.save("Report.pdf");
-            document.close();
+            reportService.generateReport(booksOutOfStock);
             model.addAttribute("addOk", "Report generation was done successfully");
         } catch (IOException e) {
             e.printStackTrace();
         }
         return "/book";
+
     }
-    @RequestMapping(value = "/book",params = "genReportC",method = RequestMethod.POST)
+    /*@RequestMapping(value = "/book",params = "genReportC",method = RequestMethod.POST)
     public String genCsvReport(Model model)
     {
         try {
-            PrintWriter pw = new PrintWriter(new File("Report.csv"));
-            StringBuilder sb = new StringBuilder();
-            sb.append("BookId");
-            sb.append(',');
-            sb.append("Title");
-            sb.append(',');
-            sb.append("Author");
-            sb.append(',');
-            sb.append("Price");
-            sb.append('\n');
-            List<Book> booksOutOfStock = bookService.findByQuantity(0);//all out of stock books have 0 on quantity
-            for(Book book:booksOutOfStock)
-            {
-                sb.append(book.getId());
-                sb.append(',');
-                sb.append(book.getTitle());
-                sb.append(',');
-                sb.append(book.getAuthor());
-                sb.append(',');
-                sb.append(book.getPrice());
-                sb.append('\n');
-            }
-            pw.write(sb.toString());
-            pw.close();
+            reportService.generateReport("CSV");
             model.addAttribute("addOk", "Report generation was done successfully");
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return "/book";
-
-    }
-
+    }*/
     @RequestMapping(value = "/userOps", method = RequestMethod.GET)
     public String showUserOps(Model model) {
         if (UserController.getLogggedFlag().equals(Boolean.TRUE)) {
@@ -212,6 +181,29 @@ public class AdminController {
     @RequestMapping(value = "/backToBook", method = RequestMethod.GET)
     public String backToBook() {
         return "redirect:/book";
+    }
+
+    @RequestMapping(value = "/book",params = "search",method = RequestMethod.POST)
+    public String searchFromApi(Model model,@RequestParam("title")String title)
+    {
+        try {
+            List<Volume> volumes=googleSearchService.findBooksByTitleAPI(title);
+            String gigel="";
+            for(Volume volume:volumes)
+            {
+                System.out.println(volume.getSaleInfo().getRetailPrice().getAmount());
+                gigel+=volume.getVolumeInfo().getLanguage().toString()+
+                        " "+ volume.getVolumeInfo().getTitle().toString()+
+                        " "+ volume.getVolumeInfo().getAuthors().get(0).toString()+
+                        " "+ volume.getSaleInfo().getRetailPrice().toString()+System.lineSeparator();
+            }
+            model.addAttribute("bookFetch",gigel);
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "/book";
     }
 
 }

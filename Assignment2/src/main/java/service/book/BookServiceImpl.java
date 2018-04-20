@@ -19,7 +19,7 @@ public class BookServiceImpl implements BookService {
     private BookRepository bookRepository;
 
     @Override
-    public Notification<Boolean> addBook(String title, String author, String genre, int price, int quantity) {
+    public Notification<Boolean> addBook(String title, String author, String genre, double price, int quantity) {
         System.out.println("Hello from book service");
         Book book=new BookBuilder().setTitle(title).setAuthor(author).setGenre(genre).setPrice(price).setQuantity(quantity).build();
         System.out.println(book.toString());
@@ -40,7 +40,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Notification<Boolean> updateBook(Long id, String title, String author, String genre, int price, int quantity) {
+    public Notification<Boolean> updateBook(Long id, String title, String author, String genre, double price, int quantity) {
         Optional<Book> b=bookRepository.findById(id);
         Book book=new Book();
         if (b.isPresent())

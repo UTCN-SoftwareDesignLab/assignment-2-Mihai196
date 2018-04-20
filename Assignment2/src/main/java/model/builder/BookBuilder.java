@@ -37,7 +37,7 @@ public class BookBuilder {
         book.setGenre(genre);
         return this;
     }
-    public BookBuilder setPrice(int price)
+    public BookBuilder setPrice(double price)
     {
         book.setPrice(price);
         return this;

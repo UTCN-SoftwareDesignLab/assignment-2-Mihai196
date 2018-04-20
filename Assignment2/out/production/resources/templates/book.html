@@ -32,7 +32,7 @@
             <th>Title</th>
             <th>Author</th>
             <th>Genre</th>
-            <th>Price</th>
+            <th>Price(RON)</th>
             <th>Quantity</th>
         </tr>
         </thead>
@@ -93,11 +93,19 @@
             </div>
             <input type="submit" class="button" name="add" value="AddBook" />
             <input type="submit" class="button" name="update" value="UpdateBook" />
+            <input type="submit" class="button" name="search" value="FetchBookDataFromAPI(title-based)"/>
+            <span th:text="${bookFetch}"/>
             <span th:text="${addOk}"/>
             <span th:text="${updateOk}"/>
             <span th:text="${addError}"/>
             <span th:text="${updateError}"/>
-            <input type="submit" class="button" name="genReport" value="GenerateReport(apache)" />
+            <input type="submit" class="button" name="genReport" value="GenerateReport" />
+            <div class="form-group">
+                <label for="typeReport" class="col-sm-4 control-label">ReportType</label>
+                <div class="col-sm-8">
+                    <input type="text" name="typeReport" id="typeReport" class="form-control"/>
+                </div>
+            </div>
             <input type="submit" class="button" name="genReportC" value="GenerateReport(csv)" />
 
 

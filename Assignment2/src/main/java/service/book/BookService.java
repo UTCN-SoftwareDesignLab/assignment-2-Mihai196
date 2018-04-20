@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface BookService {
 
-    Notification<Boolean> addBook(String title,String author,String genre,int price,int quantity);
-    Notification<Boolean> updateBook(Long id,String title,String author,String genre,int price,int quantity);
+    Notification<Boolean> addBook(String title,String author,String genre,double price,int quantity);
+    Notification<Boolean> updateBook(Long id,String title,String author,String genre,double price,int quantity);
     void deleteBook(Long id);
     Book findById(Long id);
     List<Book> findAll();
