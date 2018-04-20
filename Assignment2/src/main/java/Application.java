@@ -8,7 +8,8 @@ import repository.user.UserRepository;
 @SpringBootApplication
 @EntityScan("model")
 @EnableJpaRepositories({"repository.user","repository.sale","repository.book"})
-@ComponentScan({"model","repository.user","repository.book","repository.sale","service.book","service.sale","service.user","service.googleBooksAPI","service.report","controller"})
+@ComponentScan({"model","repository.user","repository.book","repository.sale","service.book","service.sale",
+        "service.user","service.googleBooksAPI","service.report","controller"})
 public class Application {
 
     public static void main(String []args)

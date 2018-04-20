@@ -1,6 +1,9 @@
 package service.report;
 
 import org.springframework.stereotype.Service;
+import service.report.CSVReportService;
+import service.report.PDFReportService;
+import service.report.ReportService;
 
 @Service
 public class ReportFactory {

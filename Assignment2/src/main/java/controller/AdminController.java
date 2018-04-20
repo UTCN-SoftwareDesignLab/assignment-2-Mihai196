@@ -4,11 +4,6 @@ import com.google.api.services.books.model.Volume;
 import model.Book;
 import model.User;
 import model.validation.Notification;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,10 +16,7 @@ import service.report.ReportFactory;
 import service.report.ReportService;
 import service.user.UserService;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
@@ -34,15 +26,13 @@ public class AdminController {
     private BookService bookService;
     private UserService userService;
     private GoogleSearchService googleSearchService;
-    private ReportService reportService;
     private ReportFactory reportFactory;
 
     @Autowired
-    public AdminController(BookService bookService, UserService userService,GoogleSearchService googleSearchService,ReportService reportService,ReportFactory reportFactory) {
+    public AdminController(BookService bookService, UserService userService,GoogleSearchService googleSearchService,ReportFactory reportFactory) {
         this.bookService = bookService;
         this.userService = userService;
         this.googleSearchService=googleSearchService;
-        this.reportService=reportService;
         this.reportFactory=reportFactory;
     }
 
