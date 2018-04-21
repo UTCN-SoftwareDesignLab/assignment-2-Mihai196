@@ -7,6 +7,7 @@ import model.validation.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,12 +55,9 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/book", params = "add", method = RequestMethod.POST)
-    public String addBook(Model model, @RequestParam("title") String title, @RequestParam("author") String author, @RequestParam("genre") String genre
-            , @RequestParam("price") String price, @RequestParam("quantity") String quantity) {
-        System.out.println("Seruuuus ");
-        double pr = Double.parseDouble(price);
-        int quant = Integer.parseInt(quantity);
-        Notification<Boolean> bookNotification = bookService.addBook(title, author, genre, pr, quant);
+    public String addBook(Model model, @ModelAttribute("book") Book book) {
+        //System.out.println("Seruuuus ");
+        Notification<Boolean> bookNotification = bookService.addBook(book.getTitle(), book.getAuthor(), book.getGenre(), book.getPrice(), book.getQuantity());
         if (bookNotification.hasErrors()) {
             model.addAttribute("addError", bookNotification.getFormattedErrors());
             return "book";
