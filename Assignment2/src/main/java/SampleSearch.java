@@ -18,10 +18,11 @@ public class SampleSearch  {
     public static void main(String[] args) {
         try {
             SampleSearch sampleSearch=new SampleSearch();
-            List<Volume> volumes=sampleSearch.recomendByTitle("The lord of the rings");
+            List<Volume> volumes=sampleSearch.recomendByTitle("Gone with the wind");
             for(Volume volume:volumes) {
                 System.out.println(volume.getVolumeInfo().getAuthors().toString());
                 System.out.println(volume.getVolumeInfo());
+                System.out.println(volume.getVolumeInfo().getAuthors().get(0));
             }
 
         } catch (GeneralSecurityException e) {

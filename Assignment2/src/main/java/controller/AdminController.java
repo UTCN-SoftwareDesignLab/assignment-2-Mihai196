@@ -30,20 +30,17 @@ public class AdminController {
     private ReportFactory reportFactory;
 
     @Autowired
-    public AdminController(BookService bookService, UserService userService,GoogleSearchService googleSearchService,ReportFactory reportFactory) {
+    public AdminController(BookService bookService, UserService userService, GoogleSearchService googleSearchService, ReportFactory reportFactory) {
         this.bookService = bookService;
         this.userService = userService;
-        this.googleSearchService=googleSearchService;
-        this.reportFactory=reportFactory;
+        this.googleSearchService = googleSearchService;
+        this.reportFactory = reportFactory;
     }
 
     @RequestMapping(value = "/book", params = "update", method = RequestMethod.POST)
-    public String updateBook(Model model, @RequestParam("title") String title, @RequestParam("author") String author, @RequestParam("genre") String genre
-            , @RequestParam("price") String price, @RequestParam("quantity") String quantity, @RequestParam("IdBookUp") String idBook) {
-        double pr = Double.parseDouble(price);
-        int quant = Integer.parseInt(quantity);
-        Long id = Long.parseLong(idBook);
-        Notification<Boolean> bookNotification = bookService.updateBook(id, title, author, genre, pr, quant);
+    public String updateBook(Model model, @ModelAttribute("book5") Book book) {
+        Notification<Boolean> bookNotification = bookService.updateBook(book.getId(), book.getTitle(),
+                book.getAuthor(), book.getGenre(), book.getPrice(), book.getQuantity());
         if (bookNotification.hasErrors()) {
             model.addAttribute("updateError", bookNotification.getFormattedErrors());
             return "book";
@@ -55,9 +52,10 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/book", params = "add", method = RequestMethod.POST)
-    public String addBook(Model model, @ModelAttribute("book") Book book) {
-        //System.out.println("Seruuuus ");
-        Notification<Boolean> bookNotification = bookService.addBook(book.getTitle(), book.getAuthor(), book.getGenre(), book.getPrice(), book.getQuantity());
+    public String addBook(Model model, @ModelAttribute("book5") Book book) {
+        System.out.println("Seruuuus ");
+        Notification<Boolean> bookNotification = bookService.addBook(book.getTitle(), book.getAuthor(),
+                book.getGenre(), book.getPrice(), book.getQuantity());
         if (bookNotification.hasErrors()) {
             model.addAttribute("addError", bookNotification.getFormattedErrors());
             return "book";
@@ -73,9 +71,10 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/book", params = "genReport", method = RequestMethod.POST)
-    public String genReportapache(Model model,@RequestParam("typeReport") String reportType) {
-        ReportService reportService=reportFactory.getReportType(reportType);
-        List<Book> booksOutOfStock=bookService.findByQuantity(0);
+    public String genReportapache(Model model, @RequestParam("typeReport") String reportType) {
+        model.addAttribute("book5", new Book());
+        ReportService reportService = reportFactory.getReportType(reportType);
+        List<Book> booksOutOfStock = bookService.findByQuantity(0);
         try {
             reportService.generateReport(booksOutOfStock);
             model.addAttribute("addOk", "Report generation was done successfully");
@@ -85,6 +84,30 @@ public class AdminController {
         return "/book";
 
     }
+
+    @RequestMapping(value = "/deleteBook", method = RequestMethod.GET)
+    public String deleteBook(Model model, @RequestParam("IdBook") String idBook) {
+        model.addAttribute("book5", new Book());
+        Long id = Long.parseLong(idBook);
+        bookService.deleteBook(id);
+        model.addAttribute("deleteMessage", "Book with id " + id + " was deleted succesfully from the database");
+        return "book";
+    }
+
+
+    @RequestMapping(value = "/viewBook", params = "viewBooks", method = RequestMethod.GET)
+    public String viewBooks(Model model) {
+        model.addAttribute("book5", new Book());
+        final List<Book> books = bookService.findAll();
+        model.addAttribute("books", books);
+        return "book";
+    }
+
+    @RequestMapping(value = "/backToBook", method = RequestMethod.GET)
+    public String backToBook() {
+        return "redirect:/book";
+    }
+
     /*@RequestMapping(value = "/book",params = "genReportC",method = RequestMethod.POST)
     public String genCsvReport(Model model)
     {
@@ -100,9 +123,7 @@ public class AdminController {
     public String showUserOps(Model model) {
         if (UserController.getLogggedFlag().equals(Boolean.TRUE)) {
             return "userOps";
-        }
-        else
-        {
+        } else {
             return "redirect:/login";
         }
     }
@@ -150,48 +171,51 @@ public class AdminController {
         return "/userOps";
     }
 
-    @RequestMapping(value = "/deleteBook", method = RequestMethod.GET)
-    public String deleteBook(Model model, @RequestParam("IdBook") String idBook) {
-        Long id = Long.parseLong(idBook);
-        bookService.deleteBook(id);
-        model.addAttribute("deleteMessage", "Book with id " + id + " was deleted succesfully from the database");
-        return "book";
-    }
 
-
-    @RequestMapping(value = "/viewBook", method = RequestMethod.GET)
-    public String viewBooks(Model model) {
-        final List<Book> books = bookService.findAll();
-        model.addAttribute("books", books);
-        return "book";
-    }
-
-    @RequestMapping(value = "/backToBook", method = RequestMethod.GET)
-    public String backToBook() {
-        return "redirect:/book";
-    }
-
-    @RequestMapping(value = "/book",params = "search",method = RequestMethod.POST)
-    public String searchFromApi(Model model,@RequestParam("title")String title)
-    {
+    @RequestMapping(value = "/book", params = "search", method = RequestMethod.POST)
+    public String searchFromApi(Model model, @RequestParam("title") String title) {
+        model.addAttribute("book5", new Book());
         try {
-            List<Volume> volumes=googleSearchService.findBooksByTitleAPI(title);
-            String gigel="";
-            for(Volume volume:volumes)
-            {
-                System.out.println(volume.getSaleInfo().getRetailPrice().getAmount());
-                gigel+=volume.getVolumeInfo().getLanguage().toString()+
-                        " "+ volume.getVolumeInfo().getTitle().toString()+
-                        " "+ volume.getVolumeInfo().getAuthors().get(0).toString()+
-                        " "+ volume.getSaleInfo().getRetailPrice().toString()+System.lineSeparator();
+            List<Volume> volumes = googleSearchService.findBooksByTitleAPI(title);
+            String gigel = "";
+            int i = 0;
+            for (Volume volume : volumes) {
+                i++;
+                gigel += i + " " + volume.getVolumeInfo().getTitle().toString() +
+                        " " + volume.getVolumeInfo().getAuthors().get(0).toString() +
+                        " " + volume.getSaleInfo().getRetailPrice().toString() + "\n";
             }
-            model.addAttribute("bookFetch",gigel);
+            System.out.println(gigel);
+            model.addAttribute("bookFetch", gigel);
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return "/book";
+    }
+
+    @RequestMapping(value = "/book", params = "addAPI", method = RequestMethod.POST)
+    public String addFromApi(Model model, @RequestParam("apiId") String idd, @RequestParam("title") String title) {
+        model.addAttribute("book5", new Book());
+        int id = Integer.parseInt(idd);
+        try {
+            List<Volume> volumes = googleSearchService.findBooksByTitleAPI(title);
+            Volume volume = volumes.get(id);
+            Notification<Boolean> bookNotification = bookService.addBook(volume.getVolumeInfo().getTitle(),
+                    volume.getVolumeInfo().getAuthors().get(0),
+                    "N/A", volume.getSaleInfo().getRetailPrice().getAmount(), 50);
+            if (bookNotification.hasErrors()) {
+                model.addAttribute("addError", bookNotification.getFormattedErrors());
+            } else {
+                model.addAttribute("addOk", "The new book was added succesfully to the database");
+            }
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "book";
     }
 
 }

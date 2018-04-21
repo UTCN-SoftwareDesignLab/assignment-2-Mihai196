@@ -2,7 +2,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
     <title>Books</title>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="js/home.js"></script>
@@ -22,82 +21,113 @@
     </style>
 </head>
 <body>
-    <a th:href="@{/logout}">Logout</a>
+<a th:href="@{/logout}">Logout</a>
 
-    <h1>Books:</h1>
+<h1>Books:</h1>
+<span th:text="${bookFetch}"/>
+<span th:text="${addOk}"/>
+<span th:text="${updateOk}"/>
+<span th:text="${addError}"/>
+<span th:text="${updateError}"/>
+<span th:text="${deleteMessage}"/>
 
-    <table border="1">
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Genre</th>
-            <th>Price(RON)</th>
-            <th>Quantity</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="book : ${books}">
-            <td th:text="${book.id}"></td>
-            <td th:text="${book.title}"></td>
-            <td th:text="${book.author}"></td>
-            <td th:text="${book.genre}"></td>
-            <td th:text="${book.price}"></td>
-            <td th:text="${book.quantity}"></td>
-        </tr>
-        </tbody>
-    </table>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Genre</th>
+        <th>Price(RON)</th>
+        <th>Quantity</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book : ${books}">
+        <td th:text="${book.id}"></td>
+        <td th:text="${book.title}"></td>
+        <td th:text="${book.author}"></td>
+        <td th:text="${book.genre}"></td>
+        <td th:text="${book.price}"></td>
+        <td th:text="${book.quantity}"></td>
+    </tr>
+    </tbody>
+</table>
 
-    <hr/>
+<hr/>
 
-    <div class="container">
-        <form th:action="@{/book}" th:object="${book}" method="POST">
+<div class="container">
+    <form th:action="@{/book}" th:object="${book5}" method="post" class="form-horizontal col-sm-6 col-sm-offset-3">
 
-            <input type="submit" class="button" name="opsUser" value="OperationsOnUser" />
-            <div>Title  <input name="title" th:field="*{title}"  type="text" /></div>
-            <div>Author  <input name="author" th:field="*{author}"  type="text" /></div>
-            <div>Genre  <input name="genre" th:field="*{genre}"  type="text" /></div>
-            <div>Price  <input name="price" th:field="*{price}"  type="number" /></div>
-            <div>Quantity  <input name="quantity" th:field="*{quantity}"  type="number" /></div>
-            <input type="submit" class="button" name="add" value="AddBook" />
-            <input type="submit" class="button" name="update" value="UpdateBook" />
-            <input type="submit" class="button" name="search" value="FetchBookDataFromAPI(title-based)"/>
-            <div>Id  <input name="id" th:field="*{id}"  type="number" /></div>
+        <input type="submit" class="button" name="opsUser" value="OperationsOnUser" />
 
-            <span th:text="${bookFetch}"/>
-            <span th:text="${addOk}"/>
-            <span th:text="${updateOk}"/>
-            <span th:text="${addError}"/>
-            <span th:text="${updateError}"/>
-            <input type="submit" class="button" name="genReport" value="GenerateReport" />
-            <div class="form-group">
-                <label for="typeReport" class="col-sm-4 control-label">ReportType</label>
-                <div class="col-sm-8">
-                    <input type="text" name="typeReport" id="typeReport" class="form-control"/>
-                </div>
+        <div class="form-group">
+            <label for="title" class="col-sm-4 control-label">Title:</label>
+            <div class="col-sm-8">
+                <input type="text" name="title" th:field="*{title}" id="title" class="form-control"/>
             </div>
-            <input type="submit" class="button" name="genReportC" value="GenerateReport(csv)" />
-
-
-
-        </form>
-
-        <form th:action="@{/deleteBook}" method="get">
-            <div class="form-group">
-                <label for="IdBook" class="col-sm-4 control-label">BookId which you want to delete:</label>
-                <div class="col-sm-8">
-                    <input type="text" name="IdBook" id="IdBook" class="form-control"/>
-                </div>
+        </div>
+        <div class="form-group">
+            <label for="author" class="col-sm-4 control-label">Author:</label>
+            <div class="col-sm-8">
+                <input type="text" name="author" th:field="*{author}" id="author" class="form-control"/>
             </div>
-            <input type="submit" class="button" name="delete" value="Delete" />
-            <span th:text="${deleteMessage}"/>
+        </div>
+        <div class="form-group">
+            <label for="genre" class="col-sm-4 control-label">Genre:</label>
+            <div class="col-sm-8">
+                <input type="text" name="genre" th:field="*{genre}" id="genre" class="form-control"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="price" class="col-sm-4 control-label">Price:</label>
+            <div class="col-sm-8">
+                <input type="text" name="price" th:field="*{price}" id="price" class="form-control"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="quantity" class="col-sm-4 control-label">Quantity:</label>
+            <div class="col-sm-8">
+                <input type="number" name="quantity" th:field="*{quantity}" id="quantity" class="form-control"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="IdBookUp" class="col-sm-4 control-label">BookId which you want to update:</label>
+            <div class="col-sm-8">
+                <input type="text" name="IdBookUp" th:field="*{id}" id="IdBookUp" class="form-control"/>
+            </div>
+        </div>
+        <input type="submit" class="button" name="add" value="AddBook" />
+        <input type="submit" class="button" name="update" value="UpdateBook" />
+        <input type="submit" class="button" name="search" value="FetchBookDataFromAPI(title-based)"/>
+        <div class="form-group">
+            <label for="apiId" class="col-sm-4 control-label">List Id For Book You Want To Insert From Api</label>
+            <div class="col-sm-8">
+                <input type="text" name="apiId" id="apiId" class="form-control"/>
+            </div>
+        </div>
+            <label for="typeReport" class="col-sm-4 control-label">ReportType</label>
+            <div class="col-sm-8">
+                <input type="text" name="typeReport" id="typeReport" class="form-control"/>
+            </div>
+        </div>
+        <input type="submit" class="button" name="genReport" value="GenerateReport" />
+    </form>
 
-        </form>
+    <form th:action="@{/deleteBook}" method="get">
+        <div class="form-group">
+            <label for="IdBook" class="col-sm-4 control-label">BookId which you want to delete:</label>
+            <div class="col-sm-8">
+                <input type="text" name="IdBook" id="IdBook" class="form-control"/>
+            </div>
+        </div>
+        <input type="submit" class="button" name="delete" value="Delete" />
 
-        <form th:action="@{/viewBook}" method="get">
-            <input type="submit" class="button" name="viewBooks" value="View Books" />
-        </form>
-    </div>
+    </form>
+
+    <form th:action="@{/viewBook}" method="get">
+        <input type="submit" class="button" name="viewBooks" value="View Books" />
+    </form>
+</div>
 </body>
 </html>

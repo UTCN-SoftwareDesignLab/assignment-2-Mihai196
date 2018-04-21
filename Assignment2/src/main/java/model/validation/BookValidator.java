@@ -9,7 +9,7 @@ import java.util.List;
 public class BookValidator {
     private final List<String> errors;
 
-    private final String[] GENRES=new String[]{"SF","Adventure","Drama","Thriller"};
+    private final String[] GENRES=new String[]{"SF","Adventure","Drama","Thriller","N/A"};
 
     public BookValidator() {
         errors=new ArrayList<String>();
