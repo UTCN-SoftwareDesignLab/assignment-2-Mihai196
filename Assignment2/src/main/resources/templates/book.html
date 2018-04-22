@@ -23,7 +23,7 @@
 <body>
 <a th:href="@{/logout}">Logout</a>
 
-<h1>Books:</h1>
+<h2>Books:</h2>
 <span th:text="${bookFetch}"/>
 <span th:text="${addOk}"/>
 <span th:text="${updateOk}"/>
@@ -82,7 +82,7 @@
         <div class="form-group">
             <label for="price" class="col-sm-4 control-label">Price:</label>
             <div class="col-sm-8">
-                <input type="text" name="price" th:field="*{price}" id="price" class="form-control"/>
+                <input type="number" name="price" th:field="*{price}" step="0.01"  id="price" class="form-control"/>
             </div>
         </div>
         <div class="form-group">
@@ -106,7 +106,10 @@
                 <input type="text" name="apiId" id="apiId" class="form-control"/>
             </div>
         </div>
-            <label for="typeReport" class="col-sm-4 control-label">ReportType</label>
+
+        <input type="submit" class="button" name="addAPI" value="Add Book based on list id"/>
+        <div>
+            <label f  ="typeReport" class="col-sm-4 control-label">ReportType</label>
             <div class="col-sm-8">
                 <input type="text" name="typeReport" id="typeReport" class="form-control"/>
             </div>

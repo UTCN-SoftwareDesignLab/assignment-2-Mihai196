@@ -30,11 +30,15 @@ public class BookValidator {
         }
         if(!Arrays.asList(GENRES).contains(b.getGenre()))
         {
-            errors.add("Genre not valid. Available genres: SF,Adventure,Drama,Thriller");
+            errors.add("Genre not valid. Available genres: SF,Adventure,Drama,Thriller,N/A");
         }
         if (b.getQuantity()<0)
         {
             errors.add("Can't have a negative quantity");
+        }
+        if(b.getPrice()<0)
+        {
+            errors.add("Can't have a negative price");
         }
         return errors.isEmpty();
     }
