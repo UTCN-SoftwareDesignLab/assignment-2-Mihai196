@@ -142,4 +142,11 @@ public class EmployeeController {
             return "/employee";
         }
     }
+    @RequestMapping(value = "/employee",params = "viewAllBooks",method = RequestMethod.POST)
+    public String viewallBooks(Model model)
+    {
+        final List<Book> books = bookService.findAll();
+        model.addAttribute("books", books);
+        return "/employee";
+    }
 }
