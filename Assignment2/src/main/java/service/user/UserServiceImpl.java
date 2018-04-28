@@ -5,6 +5,7 @@ import model.builder.UserBuilder;
 import model.validation.Notification;
 import model.validation.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import repository.user.UserRepository;
 
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Notification<Boolean> addUser(String username, String password, String role) {
         System.out.println("Hello from user service");
+        BCryptPasswordEncoder enc = new BCryptPasswordEncoder();
         User user = new UserBuilder().setUsername(username).setPassword(password).setRole(role).build();
         UserValidator userValidator=new UserValidator();
         boolean userValidation=userValidator.validate(user);
@@ -36,7 +38,7 @@ public class UserServiceImpl implements UserService {
         }
         else
         {
-            user.setPassword(encodePassword(password));
+            user.setPassword(enc.encode(password));
             userRepository.save(user);
             userNotification.setResult(Boolean.TRUE);
         }
@@ -47,6 +49,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Notification<Boolean> updateUser(Long id, String username, String password, String role) {
         Optional<User> userOptional=userRepository.findById(id);
+        BCryptPasswordEncoder enc = new BCryptPasswordEncoder();
         User user=new User();
         if (userOptional.isPresent())
         {
@@ -65,7 +68,7 @@ public class UserServiceImpl implements UserService {
         }
         else
         {
-            user.setPassword(encodePassword(password));
+            user.setPassword(enc.encode(password));
             userRepository.save(user);
             userNotification.setResult(Boolean.TRUE);
         }

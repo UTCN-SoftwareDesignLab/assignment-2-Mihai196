@@ -15,8 +15,13 @@ import java.util.Optional;
 @Service
 public class SaleServiceImpl implements SaleService {
 
-    @Autowired
+
     private SaleRepository saleRepository;
+
+    @Autowired
+    public SaleServiceImpl(SaleRepository saleRepository) {
+        this.saleRepository = saleRepository;
+    }
 
     @Override
     public Notification<Boolean> addSale(Book book, int quantity) {

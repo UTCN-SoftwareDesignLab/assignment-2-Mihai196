@@ -36,17 +36,15 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-10">
+                    <button name="createACC" id="createACC" class="btn btn-primary">Create new account</button>
+                </div>
+            </div>
+
             <!-- ALERTS -->
             <span th:text="${incorrect}"/>
         </form>
-        </form>
-
-        <form th:action="@{/registrationLog}" method="get">
-            <div class="form-group">
-                <div class="col-sm-offset-4 col-sm-10">
-                    <button class="btn btn-primary">Create new account</button>
-                </div>
-            </div>
         </form>
     </div>
 </body>

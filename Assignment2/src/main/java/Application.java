@@ -9,7 +9,7 @@ import repository.user.UserRepository;
 @EntityScan("model")
 @EnableJpaRepositories({"repository.user","repository.sale","repository.book"})
 @ComponentScan({"model","repository.user","repository.book","repository.sale","service.book","service.sale",
-        "service.user","service.googleBooksAPI","service.report","controller"})
+        "service.user","service.googleBooksAPI","service.report","controller","config"})
 public class Application {
 
     public static void main(String []args)

@@ -3,10 +3,12 @@ package controller;
 import com.google.api.services.books.model.Volume;
 import model.Book;
 import model.User;
+import model.builder.BookBuilder;
 import model.validation.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,6 +21,7 @@ import service.user.UserService;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -36,6 +39,14 @@ public class AdminController {
         this.googleSearchService = googleSearchService;
         this.reportFactory = reportFactory;
     }
+
+    @RequestMapping(value = "/book", method = RequestMethod.GET)
+    public String bookie(ModelMap modelMap) {
+        modelMap.addAttribute("book5", new Book());
+        return "book";
+    }
+
+    //Book operations
 
     @RequestMapping(value = "/book", params = "update", method = RequestMethod.POST)
     public String updateBook(Model model, @ModelAttribute("book5") Book book) {
@@ -108,24 +119,10 @@ public class AdminController {
         return "redirect:/book";
     }
 
-    /*@RequestMapping(value = "/book",params = "genReportC",method = RequestMethod.POST)
-    public String genCsvReport(Model model)
-    {
-        try {
-            reportService.generateReport("CSV");
-            model.addAttribute("addOk", "Report generation was done successfully");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "/book";
-    }*/
+    //User operations
     @RequestMapping(value = "/userOps", method = RequestMethod.GET)
     public String showUserOps(Model model) {
-        if (UserController.getLogggedFlag().equals(Boolean.TRUE)) {
-            return "userOps";
-        } else {
-            return "redirect:/login";
-        }
+        return "userOps";
     }
 
     @RequestMapping(value = "/userOps", params = "viewUser", method = RequestMethod.POST)
@@ -171,22 +168,28 @@ public class AdminController {
         return "/userOps";
     }
 
-
+    //Google Api operations
     @RequestMapping(value = "/book", params = "search", method = RequestMethod.POST)
     public String searchFromApi(Model model, @RequestParam("title") String title) {
         model.addAttribute("book5", new Book());
         try {
             List<Volume> volumes = googleSearchService.findBooksByTitleAPI(title);
             String gigel = "";
-            int i = 0;
+            long i = 0;
+            List<Book> booksies = new ArrayList<Book>();
             for (Volume volume : volumes) {
-                i++;
                 gigel += i + " " + volume.getVolumeInfo().getTitle().toString() +
                         " " + volume.getVolumeInfo().getAuthors().get(0).toString() +
                         " " + volume.getSaleInfo().getRetailPrice().toString() + "\n";
+                Book book = new BookBuilder().setId(i).setTitle(volume.getVolumeInfo().getTitle()).
+                        setAuthor(volume.getVolumeInfo().getAuthors().get(0))
+                        .setGenre("N/A")
+                        .setPrice(volume.getSaleInfo().getRetailPrice().getAmount())
+                        .setQuantity(50).build();
+                booksies.add(book);
+                i++;
             }
-            System.out.println(gigel);
-            model.addAttribute("bookFetch", gigel);
+            model.addAttribute("books", booksies);
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         } catch (IOException e) {
