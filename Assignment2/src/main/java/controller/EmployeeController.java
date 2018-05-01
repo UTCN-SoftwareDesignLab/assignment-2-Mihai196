@@ -32,6 +32,8 @@ public class EmployeeController {
         return "employee";
     }
 
+    //Find by fields
+
     @RequestMapping(value = "/employee", params = "findTitle", method = RequestMethod.POST)
     public String findByTitle(Model model, @RequestParam("title") String title) {
         List<Book> books = bookService.findByTitle(title);
@@ -56,6 +58,8 @@ public class EmployeeController {
         model.addAttribute("books", books);
         return "employee";
     }
+
+    //Sale processing
 
     @RequestMapping(value = "/employee", params = "addSale", method = RequestMethod.POST)
     public String addSale(Model model, @RequestParam("bookIdSale") String bookIdSale, @RequestParam("quantitySale") String quantitySale) {

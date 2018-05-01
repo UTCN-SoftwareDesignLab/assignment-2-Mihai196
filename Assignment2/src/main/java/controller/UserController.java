@@ -5,21 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import service.user.UserService;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @Controller
 public class UserController implements WebMvcConfigurer {
@@ -32,31 +28,13 @@ public class UserController implements WebMvcConfigurer {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String showLogin(Model model) {
-        model.addAttribute("incorrect","");
-        return "login";
-    }
-
-
-    @RequestMapping(value="/login",method=RequestMethod.POST)
-    public String login(Model model, @RequestParam("username")String username, @RequestParam("password") String password,
-                        HttpServletRequest request, HttpServletResponse response,BindingResult result) throws ServletException
-    {
-        try {
-            RequestCache requestCache = new HttpSessionRequestCache();
-            request.login(username,password);
-            SavedRequest savedRequest = requestCache.getRequest(request, response);
-            if (savedRequest != null) {
-                return "redirect:" + savedRequest.getRedirectUrl();
-            } else {
-                return "redirect:/login";
-            }
-
-        } catch (ServletException authenticationFailed) {
-            result.rejectValue(null, "authentication.failed");
-            return "login";
+    public String showLogin(Model model,HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession(true);
+        if(session.getAttribute("errorMessage")!=null)
+        {
+            model.addAttribute("incorrect",(String)session.getAttribute("errorMessage"));
         }
-
+        return "login";
     }
     @RequestMapping(value="/registration",method=RequestMethod.GET)
     public String reg()
